@@ -7,185 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --rose: #ff5c8a;
-    --rose-deep: #c2185b;
-    --blush: #ffd6e0;
-    --lilac: #c9b6ff;
-    --gold: #ffc93c;
-    --ink: #5a2a43;
-  }
-  * { box-sizing: border-box; }
-  [hidden] { display: none !important; }
-  html, body { margin: 0; min-height: 100%; }
-  body {
-    font-family: "Quicksand", system-ui, sans-serif;
-    color: var(--ink);
-    background: linear-gradient(160deg, #ffe3ec 0%, #f3e6ff 50%, #ffeedd 100%) fixed;
-    overflow-x: hidden;
-  }
-  .script { font-family: "Dancing Script", cursive; }
-
-  /* ---------- effects canvas (hearts + confetti) ---------- */
-  #fx { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 20; }
-
-  /* ---------- intro / gift screen ---------- */
-  #intro {
-    position: fixed; inset: 0; z-index: 10;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: 1.2rem; padding: 16px; text-align: center; color: #fff;
-    background:
-      radial-gradient(1.5px 1.5px at 12% 22%, #fff, transparent),
-      radial-gradient(1px 1px at 78% 14%, #fff, transparent),
-      radial-gradient(1.5px 1.5px at 42% 68%, #fff, transparent),
-      radial-gradient(1px 1px at 88% 76%, #fff, transparent),
-      radial-gradient(1px 1px at 26% 86%, #fff, transparent),
-      radial-gradient(1.5px 1.5px at 62% 38%, #fff, transparent),
-      radial-gradient(ellipse at 50% 30%, #4a1846 0%, #22092a 55%, #12051a 100%);
-    background-size: 220px 220px, 260px 260px, 300px 300px, 240px 240px, 280px 280px, 340px 340px, 100% 100%;
-    transition: opacity 1.2s ease, visibility 1.2s;
-  }
-  #intro.leave { opacity: 0; visibility: hidden; }
-  .gift { font-size: 5.5rem; animation: bounce 1.6s ease-in-out infinite; filter: drop-shadow(0 0 24px rgba(255, 92, 138, .6)); }
-  #intro h2 { margin: 0; font-size: clamp(2.2rem, 8vw, 3.4rem); color: #ffd6e0; }
-  #intro p { margin: 0; opacity: .85; font-size: 1.1rem; }
-  .btn {
-    margin-top: .6rem; padding: 1rem 2.6rem; border: 0; border-radius: 999px; cursor: pointer;
-    font: 600 1.25rem "Quicksand", sans-serif; color: #fff;
-    background: linear-gradient(135deg, #ff5c8a, #c86bfa);
-    box-shadow: 0 0 0 0 rgba(255, 92, 138, .6), 0 10px 30px rgba(200, 107, 250, .45);
-    animation: pulse 2s infinite;
-    transition: transform .2s ease;
-  }
-  .btn:hover { transform: scale(1.06); }
-  .btn:focus-visible, .candle:focus-visible, #mute:focus-visible { outline: 3px solid var(--gold); outline-offset: 4px; }
-
-  /* ---------- main ---------- */
-  main {
-    position: relative; z-index: 2;
-    max-width: 760px; margin: 0 auto; padding: 48px 16px 80px; text-align: center;
-  }
-  main.enter { animation: fadeUp 1.2s ease both; }
-  .hb {
-    margin: 0; font-size: clamp(2.4rem, 9vw, 4.2rem); line-height: 1.1;
-    background: linear-gradient(90deg, #ff5c8a, #c86bfa, #ff9a5c, #ff5c8a);
-    background-size: 300% 100%;
-    -webkit-background-clip: text; background-clip: text; color: transparent;
-    animation: shimmer 6s linear infinite;
-  }
-  #name {
-    margin: .2rem 0 0; font-size: clamp(3rem, 15vw, 7rem); line-height: 1.05; letter-spacing: -1px;
-    color: var(--rose);
-    text-shadow: 0 0 6px #fff, 0 0 18px #fff, 0 6px 30px rgba(255, 92, 138, .35);
-    display: inline-block; animation: wiggle 2.4s ease-in-out infinite;
-  }
-  .typed {
-    min-height: 2.2em; margin: 1rem 0 0; font-size: clamp(1.1rem, 4.5vw, 1.5rem); font-weight: 600; color: #b03a6a;
-  }
-  .typed::after { content: "|"; margin-left: 2px; animation: blink 1s steps(1) infinite; }
-
-  /* ---------- cake ---------- */
-  .cake { position: relative; width: 260px; height: 230px; margin: 40px auto 0; }
-  .plate {
-    position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
-    width: 280px; height: 24px; border-radius: 50%; background: #fff;
-    box-shadow: 0 8px 20px rgba(180, 60, 110, .25);
-  }
-  .layer { position: absolute; left: 50%; transform: translateX(-50%); border-radius: 16px 16px 10px 10px; overflow: hidden; }
-  .layer::before {
-    content: ""; position: absolute; top: 0; left: 0; right: 0; height: 22px;
-    background:
-      radial-gradient(circle at 10px 0, var(--icing) 10px, transparent 11px) 0 6px / 20px 22px repeat-x,
-      linear-gradient(var(--icing), var(--icing)) 0 0 / 100% 8px no-repeat;
-  }
-  .layer.bottom { --icing: #fff; bottom: 12px; width: 240px; height: 86px; background: linear-gradient(#ff8fb1, #e75480); }
-  .layer.top    { --icing: #ff8fb1; bottom: 96px; width: 180px; height: 66px; background: linear-gradient(#fff5f8, #ffc7d9); }
-  .candles { position: absolute; bottom: 160px; left: 50%; transform: translateX(-50%); display: flex; gap: 30px; }
-  .candle {
-    position: relative; width: 14px; height: 48px; padding: 0; border: 0; border-radius: 4px; cursor: pointer;
-    background: repeating-linear-gradient(45deg, #fff 0 6px, #ff9ec0 6px 12px);
-  }
-  .flame {
-    position: absolute; bottom: calc(100% + 2px); left: 50%; width: 16px; height: 26px; margin-left: -8px;
-    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-    background: radial-gradient(circle at 50% 70%, #fffbe0 0%, #ffd23c 40%, #ff7b2c 75%, transparent 78%);
-    filter: drop-shadow(0 0 10px #ffb347) drop-shadow(0 0 22px rgba(255, 179, 71, .6));
-    transform-origin: 50% 100%; animation: flicker .15s ease-in-out infinite alternate;
-    transition: opacity .3s ease, transform .3s ease;
-  }
-  .candle.out .flame { opacity: 0; transform: scale(.2); animation: none; }
-  .candle.out::after {
-    content: ""; position: absolute; bottom: 100%; left: 50%; width: 10px; height: 10px; margin-left: -5px;
-    border-radius: 50%; background: rgba(190, 180, 190, .7); animation: smoke 1.4s ease-out forwards;
-  }
-  .hint { margin: 1.4rem 0 0; font-size: 1rem; opacity: .85; }
-
-  /* ---------- love letter ---------- */
-  .letter {
-    position: relative; max-width: 560px; margin: 56px auto 0; padding: 48px 32px 36px; text-align: left;
-    background:
-      repeating-linear-gradient(transparent 0 31px, rgba(255, 92, 138, .12) 31px 32px),
-      #fffaf6;
-    border-radius: 14px; transform: rotate(-1deg);
-    box-shadow: 0 20px 50px rgba(180, 60, 110, .22);
-    animation: letterIn 1s cubic-bezier(.2, .9, .3, 1.2) both;
-    line-height: 2rem; font-size: 1.05rem;
-  }
-  .letter .seal {
-    position: absolute; top: -26px; left: 50%; transform: translateX(-50%);
-    width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; font-size: 1.5rem;
-    background: radial-gradient(circle at 35% 35%, #ff7aa0, #c2185b); box-shadow: 0 6px 14px rgba(194, 24, 91, .4);
-  }
-  .letter h3 { margin: 0 0 .4rem; font-size: 2rem; color: var(--rose-deep); }
-  .letter p { margin: 0 0 1rem; }
-  .letter .sign { text-align: right; font-size: 1.7rem; color: var(--rose-deep); margin: 1.2rem 0 0; line-height: 1.3; }
-
-  footer { margin-top: 48px; font-size: .9rem; opacity: .6; }
-
-  /* ---------- balloons ---------- */
-  .balloons { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 1; }
-  .balloon {
-    position: absolute; bottom: -180px; left: var(--x); width: 54px; height: 68px;
-    border-radius: 50% 50% 48% 48% / 55% 55% 45% 45%;
-    background: radial-gradient(circle at 30% 28%, rgba(255, 255, 255, .75) 0 10%, transparent 26%), var(--c);
-    opacity: .8; animation: rise var(--d) linear var(--delay) infinite;
-  }
-  .balloon::before {
-    content: ""; position: absolute; top: 100%; left: 50%; margin-left: -5px;
-    border: 5px solid transparent; border-bottom-color: var(--c); transform: translateY(-4px) rotate(180deg);
-  }
-  .balloon::after {
-    content: ""; position: absolute; top: calc(100% + 4px); left: 50%; width: 1px; height: 90px; background: rgba(120, 60, 90, .3);
-  }
-
-  /* ---------- mute ---------- */
-  #mute {
-    position: fixed; right: 16px; bottom: 16px; z-index: 11; width: 48px; height: 48px;
-    border: 0; border-radius: 50%; cursor: pointer; font-size: 1.3rem;
-    background: rgba(255, 255, 255, .7); backdrop-filter: blur(8px);
-    box-shadow: 0 6px 18px rgba(180, 60, 110, .25);
-  }
-
-  /* ---------- keyframes ---------- */
-  @keyframes bounce { 0%, 100% { transform: translateY(0) rotate(-4deg); } 50% { transform: translateY(-14px) rotate(4deg); } }
-  @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 92, 138, .6), 0 10px 30px rgba(200, 107, 250, .45); }
-                     70% { box-shadow: 0 0 0 18px rgba(255, 92, 138, 0), 0 10px 30px rgba(200, 107, 250, .45); }
-                     100% { box-shadow: 0 0 0 0 rgba(255, 92, 138, 0), 0 10px 30px rgba(200, 107, 250, .45); } }
-  @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: none; } }
-  @keyframes shimmer { to { background-position: 300% 0; } }
-  @keyframes wiggle { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(4deg); } 75% { transform: rotate(-4deg); } }
-  @keyframes blink { 50% { opacity: 0; } }
-  @keyframes flicker { from { transform: scale(1, 1) rotate(-2deg); } to { transform: scale(.92, 1.08) rotate(2deg); } }
-  @keyframes smoke { from { opacity: .8; } to { transform: translateY(-50px) scale(3); opacity: 0; } }
-  @keyframes letterIn { from { opacity: 0; transform: translateY(40px) scale(.9) rotate(-4deg); } to { opacity: 1; transform: rotate(-1deg); } }
-  @keyframes rise { to { transform: translate(var(--sway), calc(-100vh - 320px)) rotate(var(--tilt)); } }
-
-  @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
-    .balloons { display: none; }
-  }
-</style>
+<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
@@ -194,8 +16,8 @@
 <section id="intro">
   <div class="gift" aria-hidden="true">🎁</div>
   <h2 class="script">Psst... <span data-name></span> ơi</h2>
-  <p>Có một bất ngờ nhỏ đang chờ cậu nè 💌</p>
-  <button class="btn" id="open">Mở quà 💝</button>
+  <p>Chồng có một bất ngờ nhỏ dành cho vợ nè 💌</p>
+  <button class="btn" id="open">Mở quà nha vợ 💝</button>
 </section>
 
 <div class="balloons" aria-hidden="true"></div>
@@ -215,15 +37,20 @@
     <div class="layer bottom"></div>
     <div class="plate"></div>
   </div>
-  <p class="hint" id="hint">Nhắm mắt lại, ước một điều thật xinh, rồi chạm vào từng ngọn nến để thổi nhé 🕯️</p>
+  <p class="hint" id="hint" aria-live="polite" hidden>Vợ yêu ơi, nhắm mắt ước một điều thật xinh, rồi thổi hết những ngọn nến nha 🕯️</p>
+
+  <section class="memories" id="memories" hidden>
+    <h3 class="script">Những khoảnh khắc của tụi mình 📸</h3>
+    <div class="stage"><div class="ring"></div></div>
+  </section>
 
   <!-- Edit the letter text below freely -->
   <article class="letter" id="letter" hidden>
     <div class="seal" aria-hidden="true">💗</div>
-    <h3 class="script">Gửi <span data-name></span>,</h3>
-    <p>Hôm nay là ngày đặc biệt nhất trong năm — ngày thế giới có thêm cậu. Cảm ơn cậu vì đã xuất hiện, vì những nụ cười, những cuộc trò chuyện không hồi kết và cả những phút lặng im bình yên bên nhau.</p>
-    <p>Tuổi mới, mong cậu luôn khỏe mạnh, rạng rỡ, và đủ dũng cảm để theo đuổi mọi ước mơ. Nếu có hôm nào mệt quá, cứ nhớ rằng luôn có một người ở đây — làm fan cứng của cậu. 💕</p>
-    <p class="sign script">Thương cậu,<br><span data-from></span></p>
+    <h3 class="script">Gửi vợ iu <span data-name></span> của anh,</h3>
+    <p>Hôm nay là ngày đặc biệt nhất trong năm — ngày thế giới có thêm em, và cũng là ngày anh thấy mình may mắn nhất. Cảm ơn em đã đến bên anh, vì những nụ cười, những lần nũng nịu, những bữa cơm có đôi và cả những phút lặng im bình yên bên nhau.</p>
+    <p>Tuổi mới, chúc vợ luôn khỏe mạnh, xinh đẹp, vui vẻ và được làm mọi điều mình thích. Hôm nào mệt quá thì cứ dựa vào anh nha — chồng luôn ở đây, làm fan cứng, làm tài xế, làm đầu bếp và yêu em mỗi ngày. 💕</p>
+    <p class="sign script">Thương vợ nhiều nhiều,<br><span data-from></span></p>
   </article>
 
   <footer>Made with 💖</footer>
@@ -233,205 +60,10 @@
 <audio id="song" src="music.mp3" loop preload="auto"></audio>
 <button id="mute" hidden aria-label="Bật/tắt nhạc">🎵</button>
 
-<script>
-(() => {
-  const $ = s => document.querySelector(s);
-  const params = new URLSearchParams(location.search);
-  const name = params.get('name')?.trim() || 'My Love';
-  const from = params.get('from')?.trim() || 'Tớ';
-  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  // textContent, never innerHTML: name comes from the URL
-  document.querySelectorAll('[data-name]').forEach(el => el.textContent = name);
-  document.querySelectorAll('[data-from]').forEach(el => el.textContent = from);
-  document.title = `Happy Birthday ${name} 💖`;
-
-  /* ---------- effects canvas: falling hearts + confetti bursts ---------- */
-  const cv = $('#fx'), g = cv.getContext('2d');
-  const COLORS = ['#ff5c8a', '#ff9ec0', '#ffc93c', '#c9b6ff', '#ffffff', '#ff7aa8', '#c86bfa'];
-  let W, H, parts = [];
-  const rnd = (a, b) => a + Math.random() * (b - a);
-
-  function resize() {
-    const r = devicePixelRatio || 1;
-    W = innerWidth; H = innerHeight;
-    cv.width = W * r; cv.height = H * r;
-    g.setTransform(r, 0, 0, r, 0, 0);
-  }
-  addEventListener('resize', resize);
-  resize();
-
-  function spawn(kind, x, y, vx, vy) {
-    parts.push({
-      kind, x, y, vx, vy,
-      rot: rnd(0, 6.28), vr: rnd(-.15, .15),
-      s: kind === 'heart' ? rnd(8, 18) : rnd(5, 10),
-      c: COLORS[Math.random() * COLORS.length | 0],
-      a: kind === 'heart' ? rnd(.5, .9) : 1,
-    });
-  }
-
-  function heartPath(s) {
-    g.beginPath();
-    g.moveTo(0, -s / 4);
-    g.bezierCurveTo(0, -s / 2, -s / 2, -s / 2, -s / 2, -s / 4);
-    g.bezierCurveTo(-s / 2, 0, 0, s / 5, 0, s / 2);
-    g.bezierCurveTo(0, s / 5, s / 2, 0, s / 2, -s / 4);
-    g.bezierCurveTo(s / 2, -s / 2, 0, -s / 2, 0, -s / 4);
-    g.fill();
-  }
-
-  function tick() {
-    g.clearRect(0, 0, W, H);
-    if (!reduceMotion && parts.length < 45 && Math.random() < .08) {
-      spawn('heart', rnd(0, W), -20, rnd(-.3, .3), rnd(.6, 1.4));
-    }
-    for (const p of parts) {
-      if (p.kind === 'paper') { p.vx *= .985; p.vy = Math.min(p.vy + .12, 3.2); }
-      p.x += p.vx + Math.sin(p.y / 40 + p.rot) * .4;
-      p.y += p.vy;
-      p.rot += p.vr;
-      g.save();
-      g.globalAlpha = p.a;
-      g.fillStyle = p.c;
-      g.translate(p.x, p.y);
-      if (p.kind === 'heart') {
-        g.rotate(Math.sin(p.rot) * .4);
-        heartPath(p.s);
-      } else {
-        g.rotate(p.rot);
-        g.scale(1, Math.cos(p.rot * 3)); // paper flip
-        g.fillRect(-p.s / 2, -p.s / 4, p.s, p.s / 2);
-      }
-      g.restore();
-    }
-    parts = parts.filter(p => p.y < H + 40 && p.x > -60 && p.x < W + 60);
-    requestAnimationFrame(tick);
-  }
-  requestAnimationFrame(tick);
-
-  function burst(x, y, n = 140) {
-    if (reduceMotion) n = 30;
-    for (let i = 0; i < n; i++) {
-      const ang = rnd(-Math.PI * .9, -Math.PI * .1), v = rnd(5, 13);
-      spawn(Math.random() < .25 ? 'heart' : 'paper', x, y, Math.cos(ang) * v, Math.sin(ang) * v);
-    }
-  }
-
-  /* ---------- balloons ---------- */
-  function launchBalloons() {
-    const box = $('.balloons');
-    const tints = ['#ff5c8a', '#ff9ec0', '#c9b6ff', '#ffc93c', '#ff7aa8', '#b28dff', '#ffb3c7'];
-    for (let i = 0; i < 12; i++) {
-      const b = document.createElement('span');
-      b.className = 'balloon';
-      b.style.cssText =
-        `--x:${rnd(0, 95)}%;--c:${tints[i % tints.length]};--d:${rnd(11, 18)}s;` +
-        `--delay:${rnd(0, 8)}s;--sway:${rnd(-80, 80)}px;--tilt:${rnd(-15, 15)}deg`;
-      box.append(b);
-    }
-  }
-
-  /* ---------- music: music.mp3 if present, else Web Audio music box ---------- */
-  const song = $('#song');
-  let ac, master, muted = false;
-  const NOTE = { G4: 392, A4: 440, B4: 493.88, C5: 523.25, D5: 587.33, E5: 659.25, F5: 698.46, G5: 783.99 };
-  // "Happy Birthday to You" (public domain): note, beats
-  const MELODY = ('G4 .75 G4 .25 A4 1 G4 1 C5 1 B4 2 G4 .75 G4 .25 A4 1 G4 1 D5 1 C5 2 ' +
-                  'G4 .75 G4 .25 G5 1 E5 1 C5 1 B4 1 A4 2 F5 .75 F5 .25 E5 1 C5 1 D5 1 C5 3').split(' ');
-
-  function tone(f, t, d) {
-    const ring = Math.max(d, .5) * 1.8;
-    [[f, 'triangle', .16], [f * 2, 'sine', .05]].forEach(([freq, type, vol]) => {
-      const o = ac.createOscillator(), v = ac.createGain();
-      o.type = type; o.frequency.value = freq;
-      v.gain.setValueAtTime(0, t);
-      v.gain.linearRampToValueAtTime(vol, t + .02);
-      v.gain.exponentialRampToValueAtTime(.0001, t + ring);
-      o.connect(v).connect(master);
-      o.start(t); o.stop(t + ring + .05);
-    });
-  }
-
-  function playMelody() {
-    if (!ac) {
-      ac = new (window.AudioContext || window.webkitAudioContext)();
-      master = ac.createGain();
-      master.gain.value = muted ? 0 : 1;
-      master.connect(ac.destination);
-    }
-    ac.resume();
-    const beat = .45;
-    let t = ac.currentTime + .1;
-    for (let i = 0; i < MELODY.length; i += 2) {
-      const d = MELODY[i + 1] * beat;
-      tone(NOTE[MELODY[i]], t, d);
-      t += d;
-    }
-    setTimeout(playMelody, (t - ac.currentTime + 2) * 1000);
-  }
-
-  $('#mute').addEventListener('click', () => {
-    muted = !muted;
-    song.muted = muted;
-    if (master) master.gain.value = muted ? 0 : 1;
-    $('#mute').textContent = muted ? '🔇' : '🎵';
-  });
-
-  /* ---------- typewriter ---------- */
-  const lines = [
-    `Chúc mừng sinh nhật, ${name}! 🎂`,
-    'Chúc cậu tuổi mới thật rạng rỡ ✨',
-    'Luôn cười thật tươi như hôm nay nhé 😊',
-    'Và luôn được yêu thương thật nhiều 💖',
-  ].map(s => Array.from(s)); // split by code point so emoji never break in half
-  const typedEl = $('.typed');
-  let li = 0, ci = 0, deleting = false;
-  function type() {
-    const s = lines[li];
-    typedEl.textContent = s.slice(0, ci).join('');
-    if (!deleting && ci < s.length) { ci++; return setTimeout(type, 70); }
-    if (!deleting) { deleting = true; return setTimeout(type, 1800); }
-    if (ci > 0) { ci--; return setTimeout(type, 28); }
-    deleting = false;
-    li = (li + 1) % lines.length;
-    setTimeout(type, 400);
-  }
-
-  /* ---------- candles ---------- */
-  const candles = document.querySelectorAll('.candle');
-  candles.forEach(c => c.addEventListener('click', () => {
-    if (c.classList.contains('out')) return;
-    c.classList.add('out');
-    c.setAttribute('aria-label', 'Nến đã tắt');
-    if ([...candles].every(x => x.classList.contains('out'))) celebrate();
-  }));
-
-  function celebrate() {
-    const r = $('.cake').getBoundingClientRect();
-    const cx = r.left + r.width / 2, cy = r.top + 40;
-    burst(cx, cy);
-    setTimeout(() => { burst(W * .15, H); burst(W * .85, H); }, 500);
-    $('#hint').textContent = 'Điều ước đã được gửi lên các vì sao rồi đó ✨ Kéo xuống đọc thư nhé 👇';
-    setTimeout(() => {
-      $('#letter').hidden = false;
-      $('#letter').scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'center' });
-    }, 1200);
-  }
-
-  /* ---------- open gift ---------- */
-  $('#open').addEventListener('click', () => {
-    song.play().catch(playMelody); // no music.mp3 (or blocked) -> synth melody
-    $('#intro').classList.add('leave');
-    setTimeout(() => $('#intro').remove(), 1300);
-    $('#main').hidden = false;
-    $('#main').classList.add('enter');
-    $('#mute').hidden = false;
-    launchBalloons();
-    burst(W / 2, H * .6);
-    type();
-  }, { once: true });
-})();
-</script>
+<script src="js/config.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/effects.js"></script>
+<script src="js/music.js"></script>
+<script src="js/main.js"></script>
 </body>
 </html>
